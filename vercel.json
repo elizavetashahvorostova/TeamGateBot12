@@ -1,16 +1,12 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "TeamGateBot.py",
-      "use": "@vercel/python"
-    }
-  ],
   "routes": [
     {
-      "dest": "TeamGateBot.py",
-      "src": "/.*"
+      "src": "/",
+      "dest": "/",
+    },
+    {
+      "src": "/test",
+      "dest": '/',
     }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/"}]}
+  ]
+}
