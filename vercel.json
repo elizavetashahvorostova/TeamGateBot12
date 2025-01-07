@@ -11,5 +11,6 @@
       "dest": "TeamGateBot.py",
       "src": "/.*"
     }
-  ]
-}
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/"}]}

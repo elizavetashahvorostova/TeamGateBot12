@@ -1,14 +1,18 @@
 import logging
 import aiohttp
+fron dotenv import load_dotenv
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
+import os
+
+load_dotenv()
 
 # Токен бота и ваш Telegram ID
-API_TOKEN = "8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ"  # Замените на токен вашего бота
-ADMIN_ID = "1940474065"  # Замените на ваш Telegram ID
+API_TOKEN = os.getenv("8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")  # Замените на токен вашего бота
+ADMIN_ID = os.getenv("1940474065")  # Замените на ваш Telegram ID
 
 # Создание бота и диспетчера
 bot = Bot(token=API_TOKEN)
@@ -151,7 +155,7 @@ async def on_start(request):
 
 # Устанавливаем WebHook
 async def set_webhook():
-    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://<your-app-name>.vercel.app/webhook"
+    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://team-gate-qkak6rius-elizavetas-projects-632274a7.vercel.app/webhook"
     async with aiohttp.ClientSession() as session:
         async with session.get(webhook_url) as response:
             return response.status == 200
@@ -170,4 +174,4 @@ app.router.add_post('/webhook', on_start)
 app.router.add_get('/set-webhook', on_start_webhook)
 
 if __name__ == "__main__":
-    web.run_app(app, host="0.0.0.0", port=8000)
+    web.run_app(app)
