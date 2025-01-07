@@ -151,7 +151,7 @@ async def handle_work_time(message: types.Message, state: FSMContext):
 
     # Устанавливаем WebHook
     async def set_webhook():
-        webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://team-gate-qkak6rius-elizavetas-projects-632274a7.vercel.app/webhook"
+        webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://Team-gate-b3suw4ral-elizavetas-projects-632274a7.vercel.app/webhook"
         async with aiohttp.ClientSession() as session:
             async with session.get(webhook_url) as response:
                 return response.status == 200
