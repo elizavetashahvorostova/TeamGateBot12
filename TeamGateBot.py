@@ -5,12 +5,19 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
+from dotenv import load_dotenv
 import os
 
+# Загрузка переменных окружения
+load_dotenv()
 
-# Токен бота и ваш Telegram ID
-API_TOKEN = "8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ" # Замените на токен вашего бота
-ADMIN_ID = "1940474065"  # Замените на ваш Telegram ID
+# Токен бота и ваш Telegram ID из переменных окружения
+API_TOKEN = os.getenv("8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")  # Токен вашего бота
+ADMIN_ID = os.getenv("1940474065")  # Telegram ID администратора
+
+# Проверка на наличие токена и ID
+if not API_TOKEN or not ADMIN_ID:
+    raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в .env файле.")
 
 # Создание бота и диспетчера
 bot = Bot(token=API_TOKEN)
@@ -56,31 +63,31 @@ level_kb = types.ReplyKeyboardMarkup(
     resize_keyboard=True,
 )
 
-# Стартовый хендлер
+# Хэндлеры состояний
 @dp.message(F.text == "/start")
 async def start_handler(message: types.Message, state: FSMContext):
     await message.answer(
         "Чтобы стать частью команды Bright English, вам нужно заполнить анкету. "
         "После заполнения с вами свяжется владелец.\n\n"
-        "1. Гражданином какой страны вы являетесь?",
+        "1. Гражданином какой страны вы являетесь?"
     )
     await state.set_state(Form.country)
 
-# Обработка страны
+
 @dp.message(Form.country)
 async def handle_country(message: types.Message, state: FSMContext):
     await state.update_data(country=message.text)
     await message.answer("2. Кем вы хотите работать в нашей команде?", reply_markup=work_kb)
     await state.set_state(Form.work)
 
-# Обработка работы
+
 @dp.message(Form.work)
 async def handle_work(message: types.Message, state: FSMContext):
     await state.update_data(work=message.text)
     await message.answer("3. Сколько вам лет?")
     await state.set_state(Form.age)
 
-# Обработка возраста
+
 @dp.message(Form.age)
 async def handle_age(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
@@ -90,35 +97,35 @@ async def handle_age(message: types.Message, state: FSMContext):
     await message.answer("4. Вы ответственный и пунктуальный человек?", reply_markup=yes_no_kb)
     await state.set_state(Form.responsible)
 
-# Обработка ответственности
+
 @dp.message(Form.responsible)
 async def handle_responsible(message: types.Message, state: FSMContext):
     await state.update_data(responsible=message.text)
     await message.answer("5. Сколько времени у вас есть на вашу работу?")
     await state.set_state(Form.work_time)
 
-# Обработка времени работы
+
 @dp.message(Form.work_time)
 async def handle_work_time(message: types.Message, state: FSMContext):
     await state.update_data(work_time=message.text)
     await message.answer("6. Ваш юзер в телеграме (например, @username):")
     await state.set_state(Form.telegram_user)
 
-# Обработка Telegram-юзера
+
 @dp.message(Form.telegram_user)
 async def handle_telegram_user(message: types.Message, state: FSMContext):
     await state.update_data(telegram_user=message.text)
     await message.answer("7. Какой ваш уровень английского?", reply_markup=level_kb)
     await state.set_state(Form.level)
 
-# Обработка уровня
+
 @dp.message(Form.level)
 async def handle_level(message: types.Message, state: FSMContext):
     await state.update_data(level=message.text)
-    await message.answer("8.Назовите ваше имя.")
+    await message.answer("8. Назовите ваше имя.")
     await state.set_state(Form.name)
 
-# Обработка имени и завершение анкеты
+
 @dp.message(Form.name)
 async def handle_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
@@ -140,36 +147,27 @@ async def handle_name(message: types.Message, state: FSMContext):
     await message.answer("Спасибо за заполнение анкеты! Мы с вами свяжемся.")
     await state.clear()
 
-
 # Обработчик WebHook
-async def on_start(request):
-    if request.method == 'POST':
-        json_str = await request.text()
-        update = types.Update.de_json(json_str)
-        await dp.process_update(update)
-        return web.Response(status=200)
-    return web.Response(status=404)
-
-
-# Устанавливаем WebHook
-async def set_webhook():
-    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://Team-gate-b3suw4ral-elizavetas-projects-632274a7.vercel.app/webhook"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(webhook_url) as response:
-            return response.status == 200
-
-
-# Запуск WebHook и обработчик
-async def on_start_webhook(request):
-    # Установим WebHook
-    await set_webhook()
+async def webhook_handler(request):
+    json_str = await request.text()
+    update = types.Update.de_json(json_str)
+    await dp.process_update(update)
     return web.Response(status=200)
 
+# Настройка и запуск WebHook
+async def on_startup(app):
+    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://Team-gate-a9vzd30d1-elizavetas-projects-632274a7.vercel.app/webhook"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(webhook_url) as response:
+            if response.status != 200:
+                logging.error(f"Webhook установка не удалась: {response.status}")
+            else:
+                logging.info(f"Webhook успешно установлен: {webhook_url}")
 
-# Создаем aiohttp приложение
+# Создаем приложение
 app = web.Application()
-app.router.add_post('/webhook', on_start)
-app.router.add_get('/set-webhook', on_start_webhook)
+app.router.add_post("/webhook", webhook_handler)
+app.on_startup.append(on_startup)
 
 if __name__ == "__main__":
-    web.run_app(app)
+    web.run_app(app, host="0.0.0.0", port=8000)
