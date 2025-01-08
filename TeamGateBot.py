@@ -156,7 +156,7 @@ async def webhook_handler(request):
 
 # Настройка и запуск WebHook
 async def on_startup(app):
-    webhook_url = f"https://api.telegram.org/bot{API_TOKEN}/setWebhook?url=https://<ваш_проект>.railway.app/webhook"
+    webhook_url = f"https://api.telegram.org/bot{API_TOKEN}/setWebhook?url=https://web-production-6e00.up.railway.app/webhook"
     async with aiohttp.ClientSession() as session:
         async with session.get(webhook_url) as response:
             if response.status != 200:
