@@ -5,7 +5,11 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
+
 
 
 # Токен бота и ваш Telegram ID из переменных окружения
@@ -14,10 +18,7 @@ ADMIN_ID = os.getenv("ADMIN_ID")  # Telegram ID администратора
 
 # Проверка на наличие токена и ID
 if not API_TOKEN or not ADMIN_ID:
-    raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в переменных окруженияю")
-
-API_TOKEN = "8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ"
-ADMIN_ID = "1940474065"
+    raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в переменных окружения.")
 
 # Создание бота и диспетчера
 bot = Bot(token=API_TOKEN)
@@ -125,7 +126,6 @@ async def handle_level(message: types.Message, state: FSMContext):
     await message.answer("8. Назовите ваше имя.")
     await state.set_state(Form.name)
 
-
 @dp.message(Form.name)
 async def handle_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
@@ -156,7 +156,7 @@ async def webhook_handler(request):
 
 # Настройка и запуск WebHook
 async def on_startup(app):
-    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://team-gate-4yltaxr0u-elizavetas-projects-632274a7.vercel.app/webhook"
+    webhook_url = f"https://api.telegram.org/bot{API_TOKEN}/setWebhook?url=https://<ваш_проект>.railway.app/webhook"
     async with aiohttp.ClientSession() as session:
         async with session.get(webhook_url) as response:
             if response.status != 200:
