@@ -16,8 +16,8 @@ ADMIN_ID = os.getenv("ADMIN_ID")  # Telegram ID администратора
 if not API_TOKEN or not ADMIN_ID:
     raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в переменных окруженияю")
 
-print(f"API_TOKEN:8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")
-print(f"ADMIN_ID: 1940474065")
+API_TOKEN = "8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ"
+ADMIN_ID = "1940474065"
 
 # Создание бота и диспетчера
 bot = Bot(token=API_TOKEN)
