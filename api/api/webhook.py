@@ -155,7 +155,7 @@ async def webhook_handler(request):
 
 # Настройка и запуск WebHook
 async def on_startup(app):
-    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://Team-gate-8qp9s2bl7-elizavetas-projects-632274a7.vercel.app/webhook"
+    webhook_url = f"https://api.telegram.org/bot8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ/setWebhook?url=https://team-gate-4yltaxr0u-elizavetas-projects-632274a7.vercel.app/webhook"
     async with aiohttp.ClientSession() as session:
         async with session.get(webhook_url) as response:
             if response.status != 200:
