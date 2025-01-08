@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import os
 
 # Загрузка переменных окружения
-load_dotenv()
+load_dotenv(dotenv_path=r"C:\Users\Elizaveta\PycharmProjects\TeamGateBot\.env")
 
 # Токен бота и ваш Telegram ID из переменных окружения
 API_TOKEN = os.getenv("8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")  # Токен вашего бота

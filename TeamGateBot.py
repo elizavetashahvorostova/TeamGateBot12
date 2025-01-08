@@ -5,19 +5,19 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
-from dotenv import load_dotenv
 import os
 
-# Загрузка переменных окружения
-load_dotenv()
 
 # Токен бота и ваш Telegram ID из переменных окружения
-API_TOKEN = os.getenv("8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")  # Токен вашего бота
-ADMIN_ID = os.getenv("1940474065")  # Telegram ID администратора
+API_TOKEN = os.getenv("API_TOKEN")  # Токен вашего бота
+ADMIN_ID = os.getenv("ADMIN_ID")  # Telegram ID администратора
 
 # Проверка на наличие токена и ID
 if not API_TOKEN or not ADMIN_ID:
-    raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в .env файле.")
+    raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в переменных окруженияю")
+
+print(f"API_TOKEN:8061515205:AAGxh0hfjMtq8zFZMf2rA-RZrznM7tTAWaQ")
+print(f"ADMIN_ID: 1940474065")
 
 # Создание бота и диспетчера
 bot = Bot(token=API_TOKEN)
