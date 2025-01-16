@@ -1,28 +1,33 @@
+import os
 import logging
-import aiohttp
-from aiohttp import web
+from flask import Flask, request
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
-from dotenv import load_dotenv
-import os
+import asyncio
 
+# Загружаем переменные окружения
 load_dotenv()
 
-
-
-# Токен бота и ваш Telegram ID из переменных окружения
+# Токен бота и Telegram ID администратора
 API_TOKEN = os.getenv("API_TOKEN")  # Токен вашего бота
 ADMIN_ID = os.getenv("ADMIN_ID")  # Telegram ID администратора
 
-# Проверка на наличие токена и ID
+# Проверяем наличие токена и ID
 if not API_TOKEN or not ADMIN_ID:
     raise ValueError("Необходимо задать API_TOKEN и ADMIN_ID в переменных окружения.")
 
-# Создание бота и диспетчера
+# Настраиваем логирование
+logging.basicConfig(level=logging.INFO)
+
+# Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
+
+# Flask приложение
+app = Flask(__name__)
 
 # Состояния анкеты
 class Form(StatesGroup):
@@ -35,7 +40,7 @@ class Form(StatesGroup):
     level = State()
     name = State()
 
-# Кнопки для вопросов
+# Клавиатуры
 work_kb = types.ReplyKeyboardMarkup(
     keyboard=[
         [types.KeyboardButton(text="SMM-менеджером")],
@@ -126,6 +131,7 @@ async def handle_level(message: types.Message, state: FSMContext):
     await message.answer("8. Назовите ваше имя.")
     await state.set_state(Form.name)
 
+
 @dp.message(Form.name)
 async def handle_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
@@ -147,27 +153,28 @@ async def handle_name(message: types.Message, state: FSMContext):
     await message.answer("Спасибо за заполнение анкеты! Мы с вами свяжемся.")
     await state.clear()
 
-# Обработчик WebHook
-async def webhook_handler(request):
-    json_str = await request.text()
+
+# Flask-приложение для работы с WebHook
+app = Flask(__name__)
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    json_str = request.get_data(as_text=True)
     update = types.Update.de_json(json_str)
-    await dp.process_update(update)
-    return web.Response(status=200)
+    asyncio.run(dp.feed_update(bot, update))  # Асинхронно обрабатываем обновление
+    return "OK", 200
 
-# Настройка и запуск WebHook
-async def on_startup(app):
-    webhook_url = f"https://api.telegram.org/bot{API_TOKEN}/setWebhook?url=https://web-production-6e2b.up.railway.app/webhook"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(webhook_url) as response:
-            if response.status != 200:
-                logging.error(f"Webhook установка не удалась: {response.status}")
-            else:
-                logging.info(f"Webhook успешно установлен: {webhook_url}")
 
-# Создаем приложение
-app = web.Application()
-app.router.add_post("/webhook", webhook_handler)
-app.on_startup.append(on_startup)
+# Функция для настройки webhook
+async def setup_webhook():
+    webhook_url = "https://web-production-6e2b.up.railway.app/webhook"  # Замените на ваш реальный URL
+    await bot.set_webhook(webhook_url)
 
+# Запуск Flask
 if __name__ == "__main__":
-    web.run_app(app, host="0.0.0.0", port=8000)
+    # Настроим webhook перед запуском Flask
+    asyncio.run(setup_webhook())
+
+    # Запускаем Flask сервер
+    app.run(host="0.0.0.0", port=5000)
