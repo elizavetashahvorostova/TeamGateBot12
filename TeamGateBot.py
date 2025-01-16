@@ -1,11 +1,11 @@
 import os
 import logging
-from flask import Flask, request
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import F
+from flask import Flask, request
 import asyncio
 
 # Загружаем переменные окружения
